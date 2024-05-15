@@ -7,5 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Manga extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'id',
+        'author_id',
+        'title',
+        'description',
+        'release_data',
+        'image_path',
+        'is_deleted',
+    ];
 }

@@ -7,5 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class MangaGenre extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'manga_id',
+        'genre_id',
+    ];
 }
