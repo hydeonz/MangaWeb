@@ -7,5 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Rewiew extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'id',
+        'user_id',
+        'manga_id',
+        'rating',
+        'review',
+    ];
 }
