@@ -1,7 +1,8 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\MangaController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,6 +14,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/',[MangaController::class,'show'])->name('home');
+Route::get('/admin',[AdminController::class,'show'])->name('admin');
