@@ -21,6 +21,7 @@ trait MangaTrait
             ->groupBy('m.id')
             ->select(
                 'm.id as id',
+                'a.id as author_id',
                 'm.title as title',
                 'm.description as description',
                 'm.release_date as release_date',

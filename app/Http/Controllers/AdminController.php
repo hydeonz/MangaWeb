@@ -10,6 +10,7 @@ use App\Traits\MangaTrait;
 class AdminController extends Controller
 {
     use MangaTrait;
+
     public function show()
     {
         $authors = Author::all();
@@ -20,5 +21,20 @@ class AdminController extends Controller
             'genres' => $genres,
             'mangas' => $mangas,
         ]);
+    }
+
+    public function showAddManga()
+    {
+
+    }
+
+    public function showAddAuthor()
+    {
+
+    }
+
+    public function showAddGenre()
+    {
+
     }
 }

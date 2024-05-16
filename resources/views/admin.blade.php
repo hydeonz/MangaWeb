@@ -2,12 +2,105 @@
 
 @section('title', 'Административная панель')
 
+@section('script')
+    <script>
+        $(document).ready(function() {
+            $('button.edit-btn').click(function() {
+                let row = $(this).closest('tr');
+
+                console.log(row);
+                if (!row.hasClass('editing')) {
+                    row.find('input').each(function() {
+                        $(this).data('original-value', $(this).val());
+                    });
+                    row.addClass('editing');
+                }
+
+                row.find('input').prop('readonly', false);
+                row.find('.edit-btn, .delete-btn').addClass('d-none');
+                row.find('.save-btn, .cancel-btn').removeClass('d-none');
+            });
+
+            $('button.cancel-btn').click(function() {
+                let row = $(this).closest('tr');
+                row.find('input').each(function() {
+                    $(this).val($(this).data('original-value'));
+                });
+                row.removeClass('editing');
+                row.find('.edit-btn, .delete-btn').removeClass('d-none');
+                row.find('.save-btn, .cancel-btn').addClass('d-none');
+            });
+
+            $('button.save-btn').click(function() {
+                let row = $(this).closest('tr');
+                let updateUrl = $(this).attr('data-url');
+
+                let data = {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    id: row.find('input[id="manga_id"]').val(),
+                    title: row.find('input[name="title"]').val(),
+                    author_name: row.find('input[name="author_name"]').val(),
+                    release_date: row.find('input[name="release_date"]').val(),
+                    description: row.find('input[name="description"]').val()
+                };
+
+                $.ajax({
+                    url: 'api' + updateUrl,
+                    type: 'POST',
+                    data: data,
+                    success: function(response) {
+                        alert('Изменения сохранены успешно.');
+
+                        row.find('input').prop('readonly', true);
+
+                        row.find('input[name="title"]').val(response.title);
+                        row.find('input[name="author_name"]').val(response.author_name);
+                        row.find('input[name="release_date"]').val(response.release_date);
+                        row.find('input[name="description"]').val(response.description);
+
+                        row.find('.save-btn').addClass('d-none');
+                        row.find('.edit-btn, .delete-btn').removeClass('d-none');
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Произошла ошибка при сохранении изменений.');
+                        console.error(error);
+                    }
+                });
+            });
+
+            $('button.delete-btn').click(function() {
+                let deleteUrl = $(this).attr('data-url');
+                let row = $(this).closest('tr');
+
+                $.ajax({
+                    url: 'api' + deleteUrl,
+                    type: 'GET',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        alert('Манга удалена успешно.');
+                        row.remove();
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Произошла ошибка при удалении манги.');
+                        console.error(error);
+                    }
+                });
+            });
+        });
+    </script>
+@endsection
+
 @section('main')
     <div class="container-fluid">
+        <a href="{{ route('add_manga') }}" class="btn btn-sm btn-primary m-2">Добавить мангу</a>
+        <a href="{{ route('add_author') }}" class="btn btn-sm btn-primary m-2">Добавить автора</a>
+        <a href="{{ route('add_genre') }}" class="btn btn-sm btn-primary m-2">Добавить жанр</a>
         <div class="row">
             <main role="main" class="ml-sm-auto col-lg-12 px-md-4">
-                <h2>Манга</h2>
                 <div class="table-responsive">
+                    <h3 class="text-white">Манга</h3>
                     <table class="table table-striped table-sm">
                         <thead>
                         <tr>
@@ -21,25 +114,27 @@
                         <tbody>
                         @foreach($mangas as $manga)
                             <tr>
-                                <td>{{ $manga->title }}</td>
-                                <td>{{ $manga->author_name }}</td>
-                                <td>{{ $manga->release_date }}</td>
-                                <td>{{ $manga->description }}</td>
+                                <td hidden=""><input type="text" id="manga_id" value="{{ $manga->id }}"></td>
+                                <td><input type="text" name="title" class="form-control" value="{{ $manga->title }}" readonly></td>
+                                <td><input type="text" name="author_name" class="form-control" value="{{ $manga->author_name }}" readonly></td>
+                                <td><input type="date" name="release_date" class="form-control" value="{{ $manga->release_date }}" readonly></td>
+                                <td><input type="text" name="description" class="form-control" value="{{ $manga->description }}" readonly></td>
                                 <td>
-                                    <a href="/admin/manga/edit/{{ $manga->id }}" class="btn btn-sm btn-primary">Редактировать</a>
-                                    <form action="/admin/manga/delete/{{ $manga->id }}" method="POST" style="display:inline-block;">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
-                                    </form>
+                                    <button class="btn btn-sm btn-primary edit-btn">Редактировать</button>
+                                    <button class="btn btn-sm btn-danger delete-btn" data-url="/admin/manga/delete/{{ $manga->id }}">Удалить</button>
+                                    <button class="btn btn-sm btn-success save-btn d-none" data-url="/admin/manga/update/">Сохранить</button>
+                                    <button class="btn btn-sm btn-secondary cancel-btn d-none">Отменить</button>
+                                    @csrf
                                 </td>
+
                             </tr>
                         @endforeach
                         </tbody>
                     </table>
                 </div>
 
-                <h2>Авторы</h2>
                 <div class="table-responsive">
+                    <h3 class="text-white">Авторы</h3>
                     <table class="table table-striped table-sm">
                         <thead>
                         <tr>
@@ -72,6 +167,7 @@
 
                 <h2>Жанры</h2>
                 <div class="table-responsive">
+                    <h3 class="text-white">Жанры</h3>
                     <table class="table table-striped table-sm">
                         <thead>
                         <tr>
