@@ -14,12 +14,14 @@ return new class extends Migration
         Schema::create('mangas', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('author_id');
+            $table->unsignedBigInteger('genre_id');
             $table->string('title')->nullable(false);
             $table->string('description')->nullable(false);
             $table->date('release_date')->nullable(false);
             $table->string('image_path')->nullable(false);
             $table->boolean('is_deleted')->nullable(false)->default(false);
             $table->foreign('author_id')->references('id')->on('authors');
+            $table->foreign('genre_id')->references('id')->on('genres');
             $table->timestamps();
         });
     }

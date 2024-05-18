@@ -14,7 +14,11 @@ class AdminController extends Controller
     public function show()
     {
         $authors = Author::all();
-        $genres = Genre::all();
+        $genres = Genre::query()
+            ->where([
+                'is_deleted' => false,
+            ])
+            ->get();
         $mangas = $this->index();
         return view('admin',[
             'authors' => $authors,

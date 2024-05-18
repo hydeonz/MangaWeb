@@ -11,8 +11,7 @@ trait MangaTrait
     {
         return DB::table('mangas as m')
             ->join('authors as a', 'm.author_id', '=', 'a.id')
-            ->leftJoin('manga_genres as mg', 'm.id', '=', 'mg.manga_id')
-            ->leftJoin('genres as g', 'mg.genre_id', '=', 'g.id')
+            ->leftJoin('genres as g', 'm.genre_id', '=', 'g.id')
             ->where('m.is_deleted', '=', false)
             ->where(function ($query) {
                 $query->where('g.is_deleted', '=', false)
@@ -23,11 +22,12 @@ trait MangaTrait
                 'm.id as id',
                 'a.id as author_id',
                 'm.title as title',
+                'g.name as genre_names',
+                'm.genre_id as genre_id',
                 'm.description as description',
                 'm.release_date as release_date',
                 'image_path as image_path',
                 'a.name as author_name',
-                DB::raw('GROUP_CONCAT(g.name) as genre_names')
             )
             ->get();
     }
