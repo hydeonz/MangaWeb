@@ -85,7 +85,6 @@
                     data: data,
                     success: function(response) {
                         if (entity === 'manga') {
-                            // Действия при успешном обновлении манги
                             alert('Изменения сохранены успешно.');
 
                             row.find('option').each(function() {
@@ -104,12 +103,15 @@
                                 }
                             });
 
-                            // Обновление изображения манги
                             row.find('input[name="image_path"]').val(response.manga[0].image_path);
                             row.find('.image-preview').attr('src', response.manga[0].image_path);
 
                         } else if (entity === 'author') {
-                            // Действия при успешном обновлении автора
+                            $('.author-select').each(function() {
+                                if ($(this).val() === response.updated_author_id) {
+                                    this.text = response.author[0].name;
+                                }
+                            });
                             alert('Изменения сохранены успешно.');
                         } else if (entity === 'genre') {
                             alert('Изменения сохранены успешно.');
@@ -146,9 +148,11 @@
                 console.log(deleteUrl);
                 let row = $(this).closest('tr');
                 let id = $(this).attr('data-id');
+                let entity = $(this).attr('data-entity');
                 let data = {
                     id: id,
                 };
+
                 $.ajax({
                     url: 'api' + deleteUrl,
                     type: 'POST',
@@ -156,21 +160,43 @@
                     success: function(response) {
                         alert(response.message);
                         row.remove();
-                        $('.genre-select').each(function() {
-                            let select = $(this);
-                            let currentGenreId = select.val();
-                            let genreOptions = response.genres.map(function(genre) {
-                                return `<option class="genre-select d-none" value="${genre.id}">${genre.name}</option>`;
-                            }).join('');
 
-                            select.html(genreOptions);
+                        if (entity === 'author') {
+                            $('.author-select').each(function() {
+                                let select = $(this);
+                                let currentAuthorId = select.val();
+                                let authorOptions = response.authors.map(function(author) {
+                                    return `<option class="author-select d-none" value="${author.id}">${author.name}</option>`;
+                                }).join('');
 
-                            if (currentGenreId == response.deletedGenreId) {
-                                select.val(response.genres[0].id);
-                            } else {
-                                select.val(currentGenreId);
-                            }
-                        });
+                                select.html(authorOptions);
+
+                                if (currentAuthorId === response.deletedAuthorId) {
+                                    select.val(response.authors[0] ? response.authors[0].id : '');
+                                } else {
+                                    select.val(currentAuthorId);
+                                }
+                            });
+                        }
+
+                        if (entity === 'genre') {
+                            $('.genre-select').each(function() {
+                                let select = $(this);
+                                let currentGenreId = select.val();
+                                let genreOptions = response.genres.map(function(genre) {
+                                    return `<option class="genre-select d-none" value="${genre.id}">${genre.name}</option>`;
+                                }).join('');
+
+                                select.html(genreOptions);
+
+                                if (currentGenreId == response.deletedGenreId) {
+                                    select.val(response.genres[0] ? response.genres[0].id : '');
+                                } else {
+                                    select.val(currentGenreId);
+                                }
+                            });
+                        }
+
                         row = $(this).closest('tr');
                         let inputs = row.find('input, select');
                         inputs.each(function() {
@@ -188,7 +214,6 @@
                         console.error(error);
                     }
                 });
-
             });
 
             $('input[type="file"]').change(function() {
@@ -292,6 +317,7 @@
                         </tbody>
                     </table>
                 </div>
+
 
                 <h2>Жанры</h2>
                 <div class="table-responsive">
