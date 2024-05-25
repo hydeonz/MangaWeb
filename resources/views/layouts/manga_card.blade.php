@@ -1,4 +1,4 @@
-<a href="/manga?id={{ $manga->id }}" class="card text-decoration-none bg-dark text-light">
+<a href="{{ route('manga.show', ['id' => $manga->id]) }}" class="card text-decoration-none bg-dark text-light">
     <div class="card-body">
         <h5 class="card-title text-light">{{ $manga->title }}</h5>
         <div class="mb-3">

@@ -50,6 +50,6 @@ class AdminController extends Controller
 
     public function showAddGenre()
     {
-
+        return view('add_genre');
     }
 }

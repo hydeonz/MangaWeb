@@ -24,7 +24,7 @@ class AuthorController extends Controller
             return response()->json(['message' => "Автор с id {$request->input('id')} не найден"], 404);
         }
         DB::table('mangas')
-            ->where('author_id','=', $author->id)
+            ->where('author_id','=', $request->get('id'))
             ->update(['author_id' => 1]);
         DB::table('authors')
             ->where('id','=', $request->get('id'))

@@ -7,6 +7,7 @@ use App\Models\Genre;
 use App\Models\Manga;
 use App\Traits\MangaTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -19,6 +20,33 @@ class MangaController extends Controller
     public function show()
     {
         return view('home', ['mangas' => $this->index()]);
+    }
+
+    public function showManga($id)
+    {
+        $manga = DB::table('mangas as m')
+            ->join('authors as a', 'm.author_id', '=', 'a.id')
+            ->leftJoin('genres as g', 'm.genre_id', '=', 'g.id')
+            ->where('m.is_deleted', '=', false)
+            ->where('m.id', '=', $id)
+            ->where(function ($query) {
+                $query->where('g.is_deleted', '=', false)
+                    ->orWhereNull('g.is_deleted');
+            })
+            ->groupBy('m.id', 'a.id', 'g.name', 'm.genre_id', 'm.title', 'm.description', 'm.release_date', 'm.image_path', 'a.name')
+            ->select(
+                'm.id as id',
+                'a.id as author_id',
+                'm.title as title',
+                'g.name as genre_names',
+                'm.genre_id as genre_id',
+                'm.description as description',
+                'm.release_date as release_date',
+                'm.image_path as image_path',
+                'a.name as author_name'
+            )
+            ->first();
+        return view('manga_show', ['manga' => $manga]);
     }
 
     public function store(Request $request)

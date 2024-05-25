@@ -213,6 +213,7 @@
                                     select.val(currentGenreId);
                                 }
                             });
+                            logList.append('<li> Был удалён жанр с именем: ' + response.genre.name + '</li><br>');
                         }
 
                         row = $(this).closest('tr');

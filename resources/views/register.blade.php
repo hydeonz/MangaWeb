@@ -26,7 +26,7 @@
                 };
 
                 $.ajax({
-                    url: '/api/register',
+                    url: '/register',
                     type: 'POST',
                     contentType: 'application/json',
                     dataType: 'json',

@@ -8,17 +8,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 class GenreController extends Controller
 {
+    public function store(Request $request)
+    {
+        $genre = $request->get('name');
+
+        Genre::query()->insert(['name' => $genre]);
+        return response()->json(['message' => 'Добавление прошло успешно']);
+    }
 
     public function delete(Request $request)
     {
-        $genre = Genre::all()
-            ->find($request->get('id'));
+        $genre = Genre::query()->where('id', '=', $request->get('id'))->first('name');
 
         if (!$genre) {
             return response()->json(['message' => "Жанр с id {$request->input('id')} не найден"], 404);
         }
         DB::table('mangas')
-            ->where('genre_id','=', $genre->id)
+            ->where('genre_id','=', $request->get('id'))
             ->update(['genre_id' => 1]);
         DB::table('genres')
             ->where('id','=', $request->get('id'))
@@ -27,6 +33,7 @@ class GenreController extends Controller
             'genres' => Genre::all(),
             'deletedGenreId' => $request->get('id'),
             'mangas' => Manga::all(),
+            'genre' => $genre,
         ]);
     }
 

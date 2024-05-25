@@ -8,8 +8,6 @@
 
             $('button[type="submit"]').click(function(event) {
                 let name = $('#name').val();
-
-                // Проверка на заполненность полей
                 if (!name) {
                     alert('Все поля должны быть заполнены.');
                     return;
@@ -19,7 +17,7 @@
                 formData.append('name', name);
 
                 $.ajax({
-                    url: '/api/genre/add',
+                    url: '/genre/add',
                     type: 'POST',
                     data: formData,
                     processData: false,
@@ -29,7 +27,7 @@
                         $('#name').val('');
                     },
                     error: function(xhr, status, error) {
-                        alert('Произошла ошибка при добавлении автора.');
+                        alert('Произошла ошибка при добавлении жанра.');
                     }
                 });
             });
