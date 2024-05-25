@@ -29,12 +29,23 @@ class AdminController extends Controller
 
     public function showAddManga()
     {
+        $authors = Author::all();
 
+        $genres = Genre::query()
+            ->where([
+                'is_deleted' => false,
+            ])
+            ->get();
+
+        return view('add_manga',[
+            'authors' => $authors,
+            'genres' => $genres,
+        ]);
     }
 
     public function showAddAuthor()
     {
-
+        return view('add_author');
     }
 
     public function showAddGenre()

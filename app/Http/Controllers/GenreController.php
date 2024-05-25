@@ -32,27 +32,27 @@ class GenreController extends Controller
 
     public function update(Request $request)
     {
-        $genre = $request->all();
+            $genre = $request->all();
 
-        $oldGenre = Genre::query()
-            ->where('id','=',$genre['id'])
-            ->get();
+            $oldGenre = Genre::query()
+                ->where('id','=',$genre['id'])
+                ->get();
 
-        Genre::query()
-            ->where('id', '=', $genre['id'])
-            ->update([
-                'name' => $genre['name']
+            Genre::query()
+                ->where('id', '=', $genre['id'])
+                ->update([
+                    'name' => $genre['name']
+                ]);
+            $newGenre = Genre::query()
+                ->where('id','=',$genre['id'])
+                ->get();
+
+            return response()->json([
+                'genre' => $newGenre,
+                'old_genre' => $oldGenre,
+                'mangas' => Manga::all(),
+                'updated_genre_id' => $genre['id'],
             ]);
-        $newGenre = Genre::query()
-            ->where('id','=',$genre['id'])
-            ->get();
-
-        return response()->json([
-            'genre' => $newGenre,
-            'old_genre' => $oldGenre,
-            'mangas' => Manga::all(),
-            'updated_genre_id' => $genre['id'],
-        ]);
-    }
+        }
 
 }

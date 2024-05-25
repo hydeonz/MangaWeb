@@ -1,5 +1,7 @@
 <?php
 
+// User.php
+
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -15,6 +17,7 @@ class User extends Model implements Authenticatable
         'name',
         'email',
         'password',
+        'is_admin',
     ];
 
     protected $hidden = [
@@ -51,4 +54,10 @@ class User extends Model implements Authenticatable
     {
         return 'remember_token';
     }
+
+    public function isAdmin()
+    {
+        return $this->is_admin;
+    }
 }
+

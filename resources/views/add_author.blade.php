@@ -19,7 +19,7 @@
                 formData.append('name', name);
 
                 $.ajax({
-                    url: '/api/genre/add',
+                    url: '/author/add',
                     type: 'POST',
                     data: formData,
                     processData: false,
@@ -39,7 +39,7 @@
 
 @section('main')
     <div class="container-fluid">
-        <h2 class="text-white mt-4">Добавить жанр</h2>
+        <h2 class="text-white mt-4">Добавить автора</h2>
         <div class="form-group">
             <label for="name" class="text-white">Название</label>
             <input type="text" class="form-control" id="name" name="name">

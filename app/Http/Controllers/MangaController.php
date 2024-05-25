@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Author;
+use App\Models\Genre;
 use App\Models\Manga;
 use App\Traits\MangaTrait;
 use Illuminate\Http\Request;
@@ -19,18 +20,10 @@ class MangaController extends Controller
     {
         return view('home', ['mangas' => $this->index()]);
     }
-    public function delete(Request $request) {
-        Manga::all()
-            ->find($request->get('id'))
-            ->update(['is_deleted'=>true]);
 
-        response()->json(['message' => "Манга с id {$request->get('id')} была успешно удалена"]);
-    }
-
-    public function update(Request $request)
+    public function store(Request $request)
     {
         $manga = $request->all();
-        $oldManga = Manga::all()->find($manga['id'])->first();
         if ($request->hasFile('image')) {
             $file = $request->file('image');
 
@@ -38,7 +31,50 @@ class MangaController extends Controller
 
             $path = $file->storeAs('public/images', $filename);
 
-            $imagePath = Storage::url($path);;
+            $imagePath = Storage::url($path);
+                Manga::query()
+                    ->insert([
+                        'title' => $manga['title'],
+                        'author_id' => $manga['author_id'],
+                        'release_date' => $manga['release_date'],
+                        'genre_id' => $manga['genre_id'],
+                        'description' => $manga['description'],
+                        'image_path' =>  $imagePath,
+                        'updated_at' => now(),
+                    ]);
+        }
+        return response()->json(['message' => 'Добавление манги с названием ' . $manga['title'] . ' прошло успешно']);
+    }
+
+    public function delete(Request $request) {
+        $manga = Manga::query()->where('id', '=', $request->get('id'))->first('title');
+        Manga::all()
+            ->find($request->get('id'))
+            ->update(['is_deleted'=>true]);
+
+        return response()->json([
+            'message' => 'Манга с id '. $request->get('id') . 'была успешно удалена', 'manga' => $manga]);
+    }
+
+    public function update(Request $request)
+    {
+        $manga = $request->all();
+
+        $oldManga = Manga::query()
+            ->where('id','=', $manga['id'])
+            ->get();
+
+        $oldMangaAuthor = Author::query()->where('id', '=', $oldManga[0]['author_id'])->first('name');
+        $oldMangaGenre = Genre::query()->where('id', '=', $oldManga[0]['genre_id'])->first('name');
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+
+            $filename = Str::random(40) . '.jpg';
+
+            $path = $file->storeAs('public/images', $filename);
+
+            $imagePath = Storage::url($path);
             Manga::query()
                 ->where('id', '=', $manga['id'])
                 ->update([
@@ -64,10 +100,17 @@ class MangaController extends Controller
         }
         $newManga = Manga::query()->where('id', '=', $manga['id'])->get();
 
+        $mangaAuthor = Author::query()->where('id', '=', $newManga[0]['author_id'])->first('name');
+        $mangaGenre = Genre::query()->where('id', '=', $newManga[0]['genre_id'])->first('name');
+
         return response()->json([
             'oldManga' => $oldManga,
             'manga' => $newManga,
             'authors' => Author::query()->get(),
+            'oldMangaAuthor' => $oldMangaAuthor,
+            'oldMangaGenre' => $oldMangaGenre,
+            'mangaAuthor' => $mangaAuthor,
+            'mangaGenre' => $mangaGenre,
         ]);
     }
 

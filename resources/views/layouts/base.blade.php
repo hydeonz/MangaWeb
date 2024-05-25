@@ -64,6 +64,11 @@
             @endguest
 
         @auth
+                @if(Auth::user()->isAdmin())
+                        <a href="{{ route('admin') }}" type="button" class="btn btn-outline-light me-2 d-flex align-items-center column-gap-2">
+                            <span>Панель администрирования</span>
+                        </a>
+                @endif
             <form action="{{ route('logout') }}" method="post" class="form-check-inline">
                 @csrf
                 <input type="submit" class="btn btn-danger" value="Выход">

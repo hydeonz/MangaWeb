@@ -9,10 +9,16 @@ use Illuminate\Support\Facades\DB;
 
 class AuthorController extends Controller
 {
+    public function store(Request $request)
+    {
+        $author = $request->get('name');
+
+        Author::query()->insert(['name' => $author]);
+        return response()->json(['message' => 'Добавление прошло успешно']);
+    }
     public function delete(Request $request)
     {
-        $author = Author::all()
-            ->find($request->get('id'));
+        $author = Author::query()->where('id', '=', $request->get('id'))->first('name');
 
         if (!$author) {
             return response()->json(['message' => "Автор с id {$request->input('id')} не найден"], 404);
@@ -27,6 +33,7 @@ class AuthorController extends Controller
             'authors' => Author::all(),
             'deletedAuthorId' => $request->get('id'),
             'mangas' => Manga::all(),
+            'author' => $author,
         ]);
     }
 

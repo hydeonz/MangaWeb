@@ -78,27 +78,33 @@
                     data.append('name', row.find('input[name="genre"]').val());
                 }
                 $.ajax({
-                    url: 'api' + updateUrl,
+                    url: updateUrl,
                     type: 'POST',
                     processData: false,
                     contentType: false,
                     data: data,
                     success: function(response) {
+                        var logList = $('#log-list');
                         if (entity === 'manga') {
                             alert('Изменения сохранены успешно.');
+                            logList.append('<li> Старая манга: <br>' + 'Название: ' + response.oldManga[0].title + ' Автор: ' + response.oldMangaAuthor.name +
+                                ' Дата релиза: ' + response.oldManga[0].release_date + ' Описание: ' + response.oldManga[0].description + ' Жанр: ' + response.oldMangaGenre.name + '</li><br>' )
+
+                            logList.append('<li> Новая манга: <br>' + 'Название: ' + response.manga[0].title + ' Автор: ' + response.mangaAuthor.name +
+                                ' Дата релиза: ' + response.manga[0].release_date + ' Описание: ' + response.manga[0].description + ' Жанр: ' + response.mangaGenre.name + '</li><br>' )
 
                             row.find('option').each(function() {
                                 $(this).addClass('d-none');
-                                if ($(this).val() == response.oldManga.author_id) {
+                                if ($(this).val() === response.oldManga[0].author_id) {
                                     $(this).prop('selected', false);
                                 }
-                                if ($(this).val() == response.manga.author_id) {
+                                if ($(this).val() === response.manga[0].author_id) {
                                     $(this).prop('selected', true);
                                 }
-                                if ($(this).val() == response.oldManga.genre_id) {
+                                if ($(this).val() === response.oldManga[0].genre_id) {
                                     $(this).prop('selected', false);
                                 }
-                                if ($(this).val() == response.manga.genre_id) {
+                                if ($(this).val() === response.manga[0].genre_id) {
                                     $(this).prop('selected', true);
                                 }
                             });
@@ -113,6 +119,10 @@
                                 }
                             });
                             alert('Изменения сохранены успешно.');
+
+                            logList.append('<li> Старый автор: ' + response.old_author[0].name + '</li><br>');
+                            logList.append('<li> Новый автор: ' + response.author[0].name + '</li><br>');
+
                         } else if (entity === 'genre') {
                             alert('Изменения сохранены успешно.');
                             $('.genre-select').each(function() {
@@ -120,6 +130,9 @@
                                     this.text = response.genre[0].name;
                                 }
                             });
+
+                            logList.append('<li> Старый жанр: ' + response.old_genre[0].name + '</li><br>');
+                            logList.append('<li> Новый жанр: ' + response.genre[0].name + '</li><br>');
 
                         }
                         row.find('option').each(function() {
@@ -154,14 +167,19 @@
                 };
 
                 $.ajax({
-                    url: 'api' + deleteUrl,
+                    url: deleteUrl,
                     type: 'POST',
                     data: data,
                     success: function(response) {
+                        var logList = $('#log-list');
                         alert(response.message);
                         row.remove();
-
+                        console.log(response);
+                        if (entity === 'manga'){
+                            logList.append('<li> Была удалена манга с названием: ' + response.manga.title + '</li><br>');
+                        }
                         if (entity === 'author') {
+                            logList.append('<li> Была удален автор с именем: ' + response.author.name + '</li><br>');
                             $('.author-select').each(function() {
                                 let select = $(this);
                                 let currentAuthorId = select.val();
@@ -189,7 +207,7 @@
 
                                 select.html(genreOptions);
 
-                                if (currentGenreId == response.deletedGenreId) {
+                                if (currentGenreId === response.deletedGenreId) {
                                     select.val(response.genres[0] ? response.genres[0].id : '');
                                 } else {
                                     select.val(currentGenreId);
@@ -349,6 +367,10 @@
                         @endforeach
                         </tbody>
                     </table>
+                </div>
+                <div id="log" class="col-lg-4 text-white">
+                    <h4>Лог</h4>
+                    <ul id="log-list" style="list-style-type:none; padding-left:0;"></ul>
                 </div>
             </main>
         </div>
