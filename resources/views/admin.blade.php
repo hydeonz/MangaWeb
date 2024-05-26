@@ -326,10 +326,12 @@
                                 <td></td>
                                 <td></td>
                                 <td>
+                                    @if($author->id !== 1)
                                     <button class="btn btn-sm btn-primary edit-btn">Редактировать</button>
                                     <button class="btn btn-sm btn-danger delete-btn" data-entity="author" data-id="{{ $author->id }}" data-url="/author/delete">Удалить</button>
                                     <button class="btn btn-sm btn-success save-btn d-none" data-entity="author" data-url="/author/update">Сохранить</button>
                                     <button class="btn btn-sm btn-secondary cancel-btn d-none">Отменить</button>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
@@ -360,9 +362,11 @@
                                 <td></td>
                                 <td></td>
                                 <td>
+                                    @if($genre->id !== 1)
                                     <button class="btn btn-sm btn-primary edit-btn">Редактировать</button>
                                     <button class="btn btn-sm btn-danger delete-btn" data-entity="genre" data-id="{{ $genre->id }}" data-url="/genre/delete">Удалить</button>
                                     <button class="btn btn-sm btn-success save-btn d-none" data-entity="genre" data-url="/genre/update/">Сохранить</button>                                    <button class="btn btn-sm btn-secondary cancel-btn d-none">Отменить</button>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
